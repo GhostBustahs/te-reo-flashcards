@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="mi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngā Kupu Hou - Wiki 1: Ko Ahau Tēnei</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #c41e3a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(196, 30, 58, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(196, 30, 58, 0.9) 0%, rgba(0, 0, 0, 0.8) 100%);
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            min-height: 400px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+            border: 3px solid #c41e3a;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            border-radius: 20px;
+        }
+
+        .card-front {
+            background: white;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: rotateY(180deg);
+            border: 3px solid #1a1a1a;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .card-word {
+            font-size: 3em;
+            font-weight: bold;
+            color: #c41e3a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .card-definition {
+            font-size: 1.5em;
+            color: #333;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .card-hint {
+            font-size: 1em;
+            color: #999;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-prev {
+            background: #e9ecef;
+            color: #1a1a1a;
+            border: 2px solid #1a1a1a;
+        }
+
+        .btn-next {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .btn-shuffle {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .btn-know, .btn-learning {
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .btn-know {
+            background: #c41e3a;
+            color: white;
+        }
+
+        .btn-learning {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #c41e3a, #a01528);
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .mode-btn.active {
+            background: #c41e3a;
+            color: white;
+            border-color: #c41e3a;
+        }
+
+        @media (max-width: 768px) {
+            .card-word {
+                font-size: 2em;
+            }
+            
+            .card-definition {
+                font-size: 1.2em;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Ngā Kupu Hou</h1>
+            <p id="weekTitle">Wiki 1: Ko Ahau Tēnei</p>
+        </div>
+
+        <div class="mode-toggle">
+            <button class="mode-btn active" onclick="changeWeek(1)">Wiki 1</button>
+            <button class="mode-btn" onclick="changeWeek(2)">Wiki 2</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="knownCount">0</div>
+                <div class="stat-label">Known</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="learningCount">39</div>
+                <div class="stat-label">Learning</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">39</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+
+        <div class="mode-toggle">
+            <button class="mode-btn lang-btn active" onclick="setMode('maori-english')">Māori → English</button>
+            <button class="mode-btn lang-btn" onclick="setMode('english-maori')">English → Māori</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="card-container">
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <div class="card-face card-front">
+                    <div class="card-number" id="cardNumber">1 / 39</div>
+                    <div class="card-word" id="frontWord">tāne</div>
+                    <div class="card-hint">Click to reveal</div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-number" id="cardNumberBack">1 / 39</div>
+                    <div class="card-definition" id="backWord">male, husband, man</div>
+                    <div class="card-hint">Click to flip back</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-know" onclick="markKnown()">✓ I Know This</button>
+            <button class="btn btn-learning" onclick="markLearning()">↻ Still Learning</button>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-prev" onclick="previousCard()">← Previous</button>
+            <button class="btn btn-shuffle" onclick="shuffleCards()">🔀 Shuffle</button>
+            <button class="btn btn-next" onclick="nextCard()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        const vocabularyByWeek = {
+            1: [
+                { maori: "tāne", english: "male, husband, man" },
+                { maori: "wahine", english: "female, wife, woman (singular)" },
+                { maori: "wāhine", english: "females, women (plural)" },
+                { maori: "pakeke", english: "adult, age, mature" },
+                { maori: "pākeke", english: "adults" },
+                { maori: "rangatahi", english: "teenager, young adult" },
+                { maori: "taiohi", english: "youth" },
+                { maori: "hāneanea", english: "pleasant" },
+                { maori: "ātaahua", english: "beautiful, beauty" },
+                { maori: "purotu", english: "handsome" },
+                { maori: "kīrītea", english: "whiteskinned, fairskinned" },
+                { maori: "kirimangu", english: "darkskinned" },
+                { maori: "pukumahi", english: "hardworker" },
+                { maori: "menemene", english: "smile / smiling" },
+                { maori: "katakata", english: "laugh / laughing" },
+                { maori: "mōhio", english: "know" },
+                { maori: "matatau", english: "fluent, know well" },
+                { maori: "whakaiti", english: "to humble oneself, to belittle others" },
+                { maori: "whakapono", english: "to believe, have faith" },
+                { maori: "uaua", english: "difficult, hard" },
+                { maori: "ngāwari", english: "soft, easy" },
+                { maori: "tāroaroa", english: "tall (person)" },
+                { maori: "teitei", english: "tall (building/rākau) te pourewa teitei" },
+                { maori: "poto / pōteketeke", english: "short / dwarf (shortie)" },
+                { maori: "tūpuhi", english: "slim" },
+                { maori: "whīroki", english: "lean" },
+                { maori: "mōmona", english: "fat" },
+                { maori: "kaha", english: "strong, able" },
+                { maori: "hīanga", english: "mischief, deceive" },
+                { maori: "whakahī / poho kererū", english: "proud" },
+                { maori: "whakatoi", english: "to tease, give cheek" },
+                { maori: "maurītau", english: "peaceful feeling" },
+                { maori: "matakuikui", english: "be joyful, pleased" },
+                { maori: "whakamā", english: "shy, ashamed" },
+                { maori: "mataku", english: "afraid, alarmed" },
+                { maori: "ngoikore", english: "weak, powerless" },
+                { maori: "nohopuku", english: "remain silent" },
+                { maori: "hūmārie", english: "gentle, nice, humble" },
+                { maori: "rerekē", english: "be different, unusual, changed" }
+            ],
+            2: [
+                { maori: "upoko/māhunga", english: "head" },
+                { maori: "makawe", english: "hair" },
+                { maori: "huruhuru", english: "body hair (head hair - Northen Dialect)" },
+                { maori: "kōmingomingo", english: "curly" },
+                { maori: "torotika", english: "straight" },
+                { maori: "kōrinorino", english: "twisted, curly" },
+                { maori: "whiri", english: "braid / plait" },
+                { maori: "porohewa", english: "bald" },
+                { maori: "kahotea", english: "light coloured" },
+                { maori: "kanohi", english: "face" },
+                { maori: "rae", english: "forehead" },
+                { maori: "taringa", english: "ears" },
+                { maori: "tukemata", english: "eyebrows" },
+                { maori: "karu / whatu", english: "eyes, iris" },
+                { maori: "kemokemo", english: "eyelashes" },
+                { maori: "ihu", english: "nose" },
+                { maori: "waha", english: "mouth" },
+                { maori: "ngutu", english: "lips" },
+                { maori: "niho", english: "teeth" },
+                { maori: "arero", english: "tongue" },
+                { maori: "kauae", english: "chin/ jaw" },
+                { maori: "pāhau", english: "beard" },
+                { maori: "hurungutu", english: "moustache" },
+                { maori: "korokoro", english: "throat" },
+                { maori: "pāpāringa", english: "cheeks" },
+                { maori: "kakī", english: "neck" },
+                { maori: "pokohiwi/pakihiwi", english: "shoulders" },
+                { maori: "uma/poho", english: "chest" },
+                { maori: "puku", english: "stomach, abdomen" },
+                { maori: "hope", english: "waist/ hip" },
+                { maori: "kēkē", english: "armpit" },
+                { maori: "pona/turi", english: "joint/knee" },
+                { maori: "tuke", english: "elbow" },
+                { maori: "whatianga ringa", english: "wrist" },
+                { maori: "ringa/ ringaringa", english: "hand/arm" },
+                { maori: "matimati", english: "finger" },
+                { maori: "matiwae", english: "toe" },
+                { maori: "maikuku", english: "finger nail / toe nail" },
+                { maori: "waewae", english: "leg/foot" },
+                { maori: "kūhā", english: "thigh" },
+                { maori: "rekereke", english: "heel" },
+                { maori: "raparapa", english: "ankle" },
+                { maori: "tapuwae", english: "sole of the foot" },
+                { maori: "tuarā", english: "backbone" }
+            ]
+        };
+
+        let currentWeek = 1;
+        let vocabulary = vocabularyByWeek[currentWeek];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+        let mode = 'maori-english'; // 'maori-english' or 'english-maori'
+        let knownWordsByWeek = {
+            1: new Set(),
+            2: new Set()
+        };
+        let currentOrder = [...Array(vocabulary.length).keys()];
+
+        const weekTitles = {
+            1: "Wiki 1: Ko Ahau Tēnei",
+            2: "Wiki 2: Tōku Tinana"
+        };
+
+        function changeWeek(weekNumber) {
+            currentWeek = weekNumber;
+            vocabulary = vocabularyByWeek[currentWeek];
+            currentOrder = [...Array(vocabulary.length).keys()];
+            currentIndex = 0;
+            
+            // Update week title
+            document.getElementById('weekTitle').textContent = weekTitles[weekNumber];
+            
+            // Update week button styling
+            const weekButtons = document.querySelectorAll('.mode-toggle:first-of-type .mode-btn');
+            weekButtons.forEach((btn, idx) => {
+                if (idx + 1 === weekNumber) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            updateCard();
+        }
+
+        function updateCard() {
+            const card = vocabulary[currentOrder[currentIndex]];
+            const flashcard = document.getElementById('flashcard');
+            const frontWord = document.getElementById('frontWord');
+            const backWord = document.getElementById('backWord');
+            const cardNumber = document.getElementById('cardNumber');
+            const cardNumberBack = document.getElementById('cardNumberBack');
+            
+            if (mode === 'maori-english') {
+                frontWord.textContent = card.maori;
+                backWord.textContent = card.english;
+            } else {
+                frontWord.textContent = card.english;
+                backWord.textContent = card.maori;
+            }
+            
+            cardNumber.textContent = `${currentIndex + 1} / ${vocabulary.length}`;
+            cardNumberBack.textContent = `${currentIndex + 1} / ${vocabulary.length}`;
+            
+            // Reset flip state
+            if (isFlipped) {
+                flashcard.classList.remove('flipped');
+                isFlipped = false;
+            }
+            
+            updateStats();
+        }
+
+        function flipCard() {
+            const flashcard = document.getElementById('flashcard');
+            flashcard.classList.toggle('flipped');
+            isFlipped = !isFlipped;
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % vocabulary.length;
+            updateCard();
+        }
+
+        function previousCard() {
+            currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length;
+            updateCard();
+        }
+
+        function shuffleCards() {
+            currentOrder.sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            updateCard();
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            const langButtons = document.querySelectorAll('.lang-btn');
+            langButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateCard();
+        }
+
+        function markKnown() {
+            knownWordsByWeek[currentWeek].add(currentOrder[currentIndex]);
+            updateStats();
+            nextCard();
+        }
+
+        function markLearning() {
+            knownWordsByWeek[currentWeek].delete(currentOrder[currentIndex]);
+            updateStats();
+            nextCard();
+        }
+
+        function updateStats() {
+            const knownCount = document.getElementById('knownCount');
+            const learningCount = document.getElementById('learningCount');
+            const totalCount = document.getElementById('totalCount');
+            const progressFill = document.getElementById('progressFill');
+            
+            const currentKnown = knownWordsByWeek[currentWeek].size;
+            
+            knownCount.textContent = currentKnown;
+            learningCount.textContent = vocabulary.length - currentKnown;
+            totalCount.textContent = vocabulary.length;
+            
+            const progress = (currentKnown / vocabulary.length) * 100;
+            progressFill.style.width = progress + '%';
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (isFlipped) {
+                    nextCard();
+                } else {
+                    flipCard();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousCard();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                markKnown();
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                markLearning();
+            }
+        });
+
+        // Initialize
+        updateCard();
+    </script>
+</body>
+</html>
