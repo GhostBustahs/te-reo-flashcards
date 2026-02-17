@@ -290,6 +290,7 @@
         <div class="mode-toggle">
             <button class="mode-btn active" onclick="changeWeek(1)">Wiki 1</button>
             <button class="mode-btn" onclick="changeWeek(2)">Wiki 2</button>
+            <button class="mode-btn" onclick="changeWeek(3)">Wiki 3</button>
         </div>
 
         <div class="stats">
@@ -434,7 +435,65 @@
                 { maori: "rekereke", english: "heel" },
                 { maori: "raparapa", english: "ankle" },
                 { maori: "tapuwae", english: "sole of the foot" },
-                { maori: "tuarā", english: "backbone" }
+                { maori: "tuarā", english: "backbone" },
+                { maori: "nono/tou", english: "bum / backside / butt" },
+                { maori: "ure", english: "penis" },
+                { maori: "teke/tara", english: "vagina" },
+                { maori: "raho", english: "testicles" }
+            ],
+            3: [
+                { maori: "rongo", english: "sound / feel / taste / hear / smell" },
+                { maori: "tangi", english: "sound / cry" },
+                { maori: "hoihoi", english: "noisy" },
+                { maori: "tīoro/parere", english: "scream / screech / shrill" },
+                { maori: "pāorooro", english: "to resound / echo / reverberate" },
+                { maori: "umere", english: "shout / applaud / cheer" },
+                { maori: "turi", english: "be deaf" },
+                { maori: "haruru", english: "to roar / rumble" },
+                { maori: "pāoho", english: "broadcast / transmit / raise alarm" },
+                { maori: "kōrero", english: "speak / to tell / say / read / talk" },
+                { maori: "whakarongo", english: "to listen / to hear" },
+                { maori: "waiata", english: "to sing / song" },
+                { maori: "kōhimuhimu", english: "whisper, backbite, defame" },
+                { maori: "tīwaha", english: "to shout out / yell" },
+                { maori: "hāparangi", english: "bawl / bellow" },
+                { maori: "mita", english: "dialect / rhythm, intonation" },
+                { maori: "karanga", english: "to call, to summon" },
+                { maori: "whakahua", english: "to pronounce / express" },
+                { maori: "whiowhio", english: "to whistle" },
+                { maori: "ngongoro", english: "snore" },
+                { maori: "hongi", english: "smell / sniff" },
+                { maori: "pirau", english: "rotten" },
+                { maori: "haunga", english: "stink / smelly / putrid / stale / reeking" },
+                { maori: "kakara", english: "aromatic / fragrant / scented" },
+                { maori: "makariri", english: "cold (chilly)" },
+                { maori: "mātao", english: "cold (water), (fridge)" },
+                { maori: "māeke", english: "cold (body heat)" },
+                { maori: "wera", english: "hot" },
+                { maori: "werawera", english: "perspiration / sweat / to perspire" },
+                { maori: "mahana", english: "warm" },
+                { maori: "hīnawanawa/pukupuku", english: "goose bumps / pimples" },
+                { maori: "whengu", english: "blow the nose" },
+                { maori: "pā", english: "touch" },
+                { maori: "kirikā", english: "fever" },
+                { maori: "kite", english: "see / find / discover / detect" },
+                { maori: "mātakitaki", english: "inspect / observe" },
+                { maori: "whātaretare", english: "to crane forward / to peek" },
+                { maori: "kāpō", english: "blind" },
+                { maori: "kemo / kekokeko", english: "blink, wink" },
+                { maori: "waiwai", english: "watery / teary / juicy / runny / sodden" },
+                { maori: "mitimiti", english: "lick" },
+                { maori: "namunamuā", english: "flavour" },
+                { maori: "reka", english: "sweet" },
+                { maori: "kawa", english: "sour" },
+                { maori: "totetote", english: "salty" },
+                { maori: "makue", english: "very pleasant (of taste)" },
+                { maori: "hūnene", english: "luscious, strong flavoured" },
+                { maori: "mōhukihuki", english: "thrill, pierce through, yearning" },
+                { maori: "mōtī/māti", english: "consumed, scarce, surfeit (too much)" },
+                { maori: "nohunohu", english: "disgusting" },
+                { maori: "wainamu", english: "yuck" },
+                { maori: "rorerore", english: "braised kai" }
             ]
         };
 
@@ -446,13 +505,15 @@
         let mode = 'maori-english'; // 'maori-english' or 'english-maori'
         let knownWordsByWeek = {
             1: new Set(),
-            2: new Set()
+            2: new Set(),
+            3: new Set()
         };
         let currentOrder = [...Array(vocabulary.length).keys()];
 
         const weekTitles = {
             1: "Wiki 1: Ko Ahau Tēnei",
-            2: "Wiki 2: Tōku Tinana"
+            2: "Wiki 2: Tōku Tinana",
+            3: "Wiki 3: Rongo"
         };
 
         // Load saved progress from localStorage
@@ -465,6 +526,7 @@
                     if (data.knownWords) {
                         knownWordsByWeek[1] = new Set(data.knownWords[1] || []);
                         knownWordsByWeek[2] = new Set(data.knownWords[2] || []);
+                        knownWordsByWeek[3] = new Set(data.knownWords[3] || []);
                     }
                     // Load last position
                     if (data.currentWeek) {
@@ -488,7 +550,8 @@
                 const data = {
                     knownWords: {
                         1: Array.from(knownWordsByWeek[1]),
-                        2: Array.from(knownWordsByWeek[2])
+                        2: Array.from(knownWordsByWeek[2]),
+                        3: Array.from(knownWordsByWeek[3])
                     },
                     currentWeek: currentWeek,
                     mode: mode,
